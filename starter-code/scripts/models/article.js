@@ -51,6 +51,7 @@ Article.fetchAll = function() {
       2. Then we can render the index page */
       //Article.loadAll(TODO: Invoke with our localStorage!);
       //TODO: Now let's render the index page
+    Article.loadAll(localStorage.hackerIpsum);
   } else {
     /* TODO: Otherwisem without our localStorage data we need to:
       - retrieve our JSON asynchronously
@@ -59,6 +60,9 @@ Article.fetchAll = function() {
       1. Load our JSON data,
       2. Store that same data in localStorage so we can skip the server call next time,
       3. And then render the index page. */
+    $.getJSON('data/hackerIpsum.json', function(data) {
+      localStorage.hackerIpsum = JSON.stringify(data);
+    });
   }
 };
 
