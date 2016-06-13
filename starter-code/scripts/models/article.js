@@ -51,13 +51,27 @@ Article.loadAll = function(dataWePassIn) {
       //TODO: Now let's render the index page
 
 Article.fetchAll = function() {
-  if(localStorage.hackerIpsum) {
-    Article.loadAll(JSON.parse(localStorage.hackerIpsum));
-    articleView.renderIndexPage();
+  if(localStorage.hackerIpsum && localStorage.eTag) {
+    $.ajax({
+      url: 'data/hackerIpsum.json',
+      type: 'HEAD',
+    }).done(function(data, message, xhr){
+      if (xhr.getResponseHeader('eTag') !== localStorage.eTag) {
+        localStorage.eTag = JSON.stringify(xhr.getResponseHeader('eTag'));
+        $.getJSON('data/hackerIpsum.json', function(data, message, xhr) {
+          localStorage.hackerIpsum = JSON.stringify(data);
+          Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+          articleView.renderIndexPage();
+        });
+      } else {
+        Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+        articleView.renderIndexPage();
+      }
+    });
   } else {
-
-    $.getJSON('data/hackerIpsum.json', function(data) {
+    $.getJSON('data/hackerIpsum.json', function(data, message, xhr) {
       localStorage.hackerIpsum = JSON.stringify(data);
+      localStorage.eTag = JSON.stringify(xhr.getResponseHeader('eTag'));
       Article.loadAll(JSON.parse(localStorage.hackerIpsum));
       articleView.renderIndexPage();
     });
