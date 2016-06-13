@@ -44,15 +44,26 @@ Article.loadAll = function(dataWePassIn) {
 
 /* This function below will retrieve the data from either a local or remote
  source, process it, then hand off control to the View: */
-Article.fetchAll = function() {
-  if(localStorage.hackerIpsum) {
      /* When our data is already in localStorage:
       1. We can process and load it,
       2. Then we can render the index page */
       //Article.loadAll(TODO: Invoke with our localStorage!);
       //TODO: Now let's render the index page
-    Article.loadAll(localStorage.hackerIpsum);
+
+Article.fetchAll = function() {
+  if(localStorage.hackerIpsum) {
+    Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+    articleView.renderIndexPage();
   } else {
+
+    $.getJSON('data/hackerIpsum.json', function(data) {
+      localStorage.hackerIpsum = JSON.stringify(data);
+      Article.loadAll(JSON.parse(localStorage.hackerIpsum));
+      articleView.renderIndexPage();
+    });
+  }
+};
+
     /* TODO: Otherwisem without our localStorage data we need to:
       - retrieve our JSON asynchronously
       (which jQuery method is best for this?).
@@ -60,11 +71,6 @@ Article.fetchAll = function() {
       1. Load our JSON data,
       2. Store that same data in localStorage so we can skip the server call next time,
       3. And then render the index page. */
-    $.getJSON('data/hackerIpsum.json', function(data) {
-      localStorage.hackerIpsum = JSON.stringify(data);
-    });
-  }
-};
 
 
 /* Great work so far! STRETCH GOAL TIME!? Refactor your fetchAll above, or
